@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+</head>
+
+<body class="p-4">
+    <!-- Form Tambah Buku -->
+    <form class="row mb-4" action="">
+        <div class="col-auto">
+            <input class="form-control" id="title-input" type="text" placeholder="Judul" />
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary" type="button" onClick="addBook()">Tambah</button>
+        </div>
+    </form>
+
+    <!-- Tabel Buku -->
+    <table class="table">
+        </thead>
+        <tr>
+            <th>No.</th>
+            <th>Judul</th>
+        </tr>
+        </thead>
+        <tbody id="books-table-body"></tbody>
+    </table>
+
+    <script>
+        var booksTableBody = document.getElementById('books-table-body');
+
+        fetch('http://localhost:8000/api/books')
+            .then(function (res) { return res.json(); }) // Parse JSON
+            .then(function (books) {
+                // Cek isi 'books'
+                // console.log({books});
+
+                books.forEach(function (book) {
+                    // console.log({ book });
+
+                    var tr = document.createElement('tr');
+
+                    tr.innerHTML = `
+                        <td>${book.id}</td> 
+                        <td>${book.title}</td>
+                    `;
+
+                    booksTableBody.appendChild(tr);
+                });
+            })
+            .catch(function (err) { console.warn('Something went wrong.', err); }); // Handle error
+
+        function addBook() {
+            // Dapatkan nilai input
+            var title = document.getElementById('title-input').value;
+
+            fetch('http://localhost:8000/api/books', {
+                // Gunakan method POST untuk tambah
+                method: 'POST',
+                // Kirim input ke request body dalam bentuk JSON
+                body: JSON.stringify({
+                    title: title,
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(function (res) { return res.json(); }) // Parse JSON
+                .then(function (message) {
+                    window.alert(message);
+                })
+                .catch(function (err) { console.warn('Something went wrong.', err); }); // Handle error
+        }
+    </script>
+</body>
+
+</html>
